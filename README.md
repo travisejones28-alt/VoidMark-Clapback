@@ -1,3 +1,22 @@
+# VoidMark Clapback — Compact In-Game Quick Replies
+
+**Current main-branch mode (October 31, 2026):** This addon is now usable entirely inside Classic Era without AI, Windows software, Node.js, or an API key. The companion files remain in the repository as optional legacy/experimental tooling, but they are **not necessary** for quick replies.
+
+## Quick setup
+
+1. Pull the latest main branch.
+2. Copy the updated `VoidMarkClapback` directory into `C:\Program Files (x86)\World of Warcraft\_classic_era_\Interface\AddOns\VoidMarkClapback`.
+3. Restart the game or type `/reload`.
+4. Receive a whisper and click **[CB]**, or type `/clapback`.
+5. Choose a style and a reply using the dropdowns. Click **Send** to send one whisper, or **Edit in chat** to review/change before pressing Enter.
+6. **Next Player** cycles conversations. **Next Reply** cycles options.
+
+This mode uses 25 authored presets across five styles. It does not generate contextual AI text, automate replies, or message anyone without a deliberate click. Chat logging is not required.
+
+The older Windows-companion details below describe the earlier implementation and are retained for historical reference; their in-game button descriptions are superseded by this section.
+
+---
+
 # VoidMark Clapback 0.1.1
 
 **Minimap button:** left-click the purple chat icon to open/close Clapback. Drag it around the minimap to reposition it; its position is saved per character. Supports round minimaps and square maps that report their shape (including ElvUI). `/clapback` remains available.
