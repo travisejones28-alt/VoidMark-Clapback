@@ -1,5 +1,6 @@
 local _, V = ...
 local panel, history, status, title, context, reply, hint
+local displayedPlayer
 local function label(parent,text,x,y,width)
     local f=parent:CreateFontString(nil,'OVERLAY','GameFontNormal')
     f:SetPoint('TOPLEFT',x,y);f:SetWidth(width);f:SetJustifyH('LEFT');f:SetText(text);return f
@@ -13,6 +14,11 @@ end
 function V.Refresh()
     if not panel then return end
     V.Prune()
+    if displayedPlayer ~= V.selected then
+        displayedPlayer=V.selected
+        if context then context:SetText('') end
+        if reply then reply:SetText('') end
+    end
     local c=V.conversations[V.selected]
     title:SetText(c and ('VoidMark Clapback | '..c.name) or 'VoidMark Clapback')
     history:Clear()

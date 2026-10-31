@@ -56,7 +56,7 @@ $null=Button $form 'Copy Reply' 202 610 112 {Safe {if($draft.Text){[Windows.Form
 $null=Button $form 'Paste Context' 322 610 132 {Safe {$null=Api '/import' @{text=[Windows.Forms.Clipboard]::GetText()};Refresh-State}}
 $null=Button $form 'Hide' 462 610 92 {$form.Hide()}
 $status=Label $form 'Connecting...' 14 649 540 50
-$script:state=$null;$script:updating=$false;$script:replySignature='';$script:keys=@();$script:registered=$false
+$script:state=$null;$script:updating=$false;$script:replySignature='';$script:keys=@();$script:registered=$false;$script:displayedPlayer=''
 $players.Add_SelectedIndexChanged({if(!$script:updating -and $players.SelectedIndex -ge 0){Safe {$null=Api '/select' @{key=$script:keys[$players.SelectedIndex]};$instructions.Text='';Refresh-State}}})
 $replies.Add_SelectedIndexChanged({if($replies.SelectedIndex -ge 0){$draft.Text=[string]$replies.SelectedItem}})
 function Refresh-State {
@@ -66,6 +66,7 @@ function Refresh-State {
     if(($keys -join '|') -ne ($script:keys -join '|')){$players.Items.Clear();foreach($c in $s.conversations){$null=$players.Items.Add($c.player)};$script:keys=$keys}
     $players.SelectedIndex=[Array]::IndexOf($script:keys,$s.selected)
     $c=@($s.conversations|Where-Object {$_.key -eq $s.selected})|Select-Object -First 1
+    if($script:displayedPlayer -ne $s.selected){$instructions.Clear();$script:displayedPlayer=$s.selected}
     $text=(@($c.messages|ForEach-Object { $who=if($_.direction -eq 'in'){$c.player}else{'Me'}; $who+': '+$_.text }) -join "`r`n")
     if($history.Text -ne $text){$history.Text=$text;$history.SelectionStart=$history.Text.Length;$history.ScrollToCaret()}
     $incoming=@($c.messages|Where-Object {$_.direction -eq 'in'})|Select-Object -Last 1

@@ -15,7 +15,7 @@ test('tail skips old logs; handles partial UTF8, truncation, rotation, missing f
  const dir=fs.mkdtempSync(path.join(process.cwd(),'.test-clapback-'));const file=path.join(dir,'chat.txt');
  try{
   fs.writeFileSync(file,'old\n');const t=new Tailer(file);assert.deepEqual(t.poll(),[]);
-  const b=Buffer.from('caf�\n');fs.appendFileSync(file,b.subarray(0,4));assert.deepEqual(t.poll(),[]);fs.appendFileSync(file,b.subarray(4));assert.deepEqual(t.poll(),['caf�']);assert.deepEqual(t.poll(),[]);
+  const b=Buffer.from('café\n');fs.appendFileSync(file,b.subarray(0,4));assert.deepEqual(t.poll(),[]);fs.appendFileSync(file,b.subarray(4));assert.deepEqual(t.poll(),['café']);assert.deepEqual(t.poll(),[]);
   fs.writeFileSync(file,'x\n');assert.deepEqual(t.poll(),['x']);fs.renameSync(file,file+'.old');fs.writeFileSync(file,'replacement\n');assert.deepEqual(t.poll(),['replacement']);
   fs.unlinkSync(file);assert.deepEqual(t.poll(),[]);assert.match(t.status,/Waiting/);
  }finally{fs.rmSync(dir,{recursive:true,force:true});}
@@ -44,7 +44,7 @@ test('API failure paths, refusal, invalid schema, Unicode byte limits',async()=>
  for(const code of [401,403,429,500])await assert.rejects(generate(conversation,s,'x','',async()=>({ok:false,status:code})),/key|access|quota|error/);
  await assert.rejects(generate(conversation,s,'x','',async()=>{throw Error('secret response');}),/connection/);
  await assert.rejects(generate(conversation,s,'x','',async()=>response(['same','same','same'])),/Too few/);
- await assert.rejects(generate(conversation,s,'x','',async()=>response(['??'.repeat(20),'okay','yes'])),/Too few/);
+ await assert.rejects(generate(conversation,s,'x','',async()=>response(['😀'.repeat(20),'okay','yes'])),/Too few/);
  await assert.rejects(generate(conversation,s,'x','',async()=>({ok:true,json:async()=>({status:'incomplete'})})),/incomplete/);
  await assert.rejects(generate(conversation,s,'x','',async()=>({ok:true,json:async()=>({output:[]})})),/usable/);
 });
