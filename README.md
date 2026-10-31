@@ -1,4 +1,6 @@
-# VoidMark Clapback 0.1.0
+# VoidMark Clapback 0.1.1
+
+**Minimap button:** left-click the purple chat icon to open/close Clapback. Drag it around the minimap to reposition it; its position is saved per character. Supports round minimaps and square maps that report their shape (including ElvUI). `/clapback` remains available.
 
 Standalone Classic Era whisper addon and Windows AI reply companion. Everything lives in this repository. Loki is not used or modified.
 

@@ -12,6 +12,7 @@ SlashCmdList={}
 local V={Open=function()end}
 assert(loadfile('VoidMarkClapback/Core.lua'))('VoidMarkClapback',V)
 assert(loadfile('VoidMarkClapback/UI.lua')) -- syntax check only
+assert(loadfile('VoidMarkClapback/Minimap.lua')) -- syntax check only
 handlers.event(nil,'ADDON_LOADED','VoidMarkClapback')
 local function incoming(player,id)
   handlers.event(nil,'CHAT_MSG_WHISPER','why me?',player,'Common','','','',0,0,'',0,id,'Player-GUID')
@@ -31,3 +32,4 @@ assert(V.Export():find('VMC1\tMe%-TestRealm\tSecond%-Realm'),'manual context cha
 handlers.event(nil,'PLAYER_LOGOUT');assert(VoidMarkClapbackDB.conversations==nil,'history private by default')
 now=now+3601;V.Prune();assert(next(V.conversations)==nil,'retention')
 print('Addon contract checks passed')
+

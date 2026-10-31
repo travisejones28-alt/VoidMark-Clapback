@@ -61,6 +61,7 @@ frame:SetScript('OnEvent',function(self,event,...)
         if ... ~= addon then return end
         VoidMarkClapbackDB = VoidMarkClapbackDB or {}
         V.db=VoidMarkClapbackDB
+        if V.CreateMinimapIcon then V.CreateMinimapIcon() end
         if V.db.remember then V.conversations=V.db.conversations or {} end
         V.db.conversations=nil
         V.Prune()
