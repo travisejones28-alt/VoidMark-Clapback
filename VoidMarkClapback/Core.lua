@@ -49,7 +49,7 @@ function V.Export()
 end
 local function incomingFilter(self, event, message, sender, ...)
     if not sender then return false, message, sender, ... end
-    return false, message .. ' |cffaa77ff|Hvmclap:' .. encode(sender) .. '|h[Clapback]|h|r', sender, ...
+    return false, message .. ' |cffaa77ff|Hvmclap:' .. encode(sender) .. '|h[CB]|h|r', sender, ...
 end
 local frame=CreateFrame('Frame')
 frame:RegisterEvent('ADDON_LOADED')
