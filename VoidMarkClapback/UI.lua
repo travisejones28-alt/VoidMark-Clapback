@@ -3,42 +3,91 @@ local _, V = ...
 local panel, history, targetText, preview, status, styleMenu, replyMenu
 local style = 'Sarcastic'
 local replyIndex = 1
-local styleOrder = {'Sarcastic', 'Funny', 'Dry Humor', 'Friendly', 'Ridiculous'}
+local styleOrder = {'Subscription', 'Gank Complaints', 'No Life', 'Sarcastic', 'Funny', 'Dry Humor', 'Friendly'}
 local replies = {
+    ['Subscription'] = {
+        "I'm getting every penny out of my $14.99. You?",
+        "My $14.99 is going great. Yours sounds stressful.",
+        "We pay the same sub. Only one of us is having fun.",
+        "I paid $14.99 to play WoW, not to make your day better.",
+        "Best $14.99 I've spent this month. Appreciate your feedback.",
+        "I'm enjoying my subscription. You seem to be reviewing yours.",
+        "I'm having $14.99 worth of fun. You sound like you want a refund.",
+        "Same monthly fee, wildly different experiences.",
+        "Your subscription includes PvP too. Surprise!",
+        "I love that we're both paying for this conversation."
+    },
+    ['Gank Complaints'] = {
+        "You clicked a PvP server and found the PvP. Wild.",
+        "The loading screen did say PvP, right?",
+        "I didn't realize Redridge had a customer service department.",
+        "It's a dangerous world. Says so right on the box.",
+        "The flight master really should charge for this entertainment.",
+        "You've located the graveyard. That's progress.",
+        "I came here for world PvP. Looks like I found it.",
+        "I was going to do quests, but this was more entertaining.",
+        "I'm not camping. I'm enjoying the local scenery.",
+        "You can always try taking a different road."
+    },
+    ['No Life'] = {
+        "You found time to whisper me about my free time. Respect.",
+        "You're tracking my schedule better than I am.",
+        "I logged in to have fun. You logged in to write reviews.",
+        "Imagine spending your playtime worried about mine.",
+        "My schedule seems to be your favorite quest.",
+        "I'm glad somebody is keeping attendance.",
+        "You know where I am more often than my own guild does.",
+        "I haven't checked the clock. Apparently you have.",
+        "I appreciate you following my career so closely.",
+        "If I'm such a loser, why are you subscribing to the updates?"
+    },
     ['Sarcastic'] = {
-        'That was almost intimidating. Keep practicing.',
-        'I appreciate the free feedback.',
-        'You seem very invested in my character development.',
-        'Noted. I will alert the management.',
-        'Your concern has been filed under PvP.'
+        "Thanks. I'll bring that up at the next Horde meeting.",
+        "That was almost a convincing complaint.",
+        "Please hold while I locate someone concerned.",
+        "Have you considered writing a strongly worded letter?",
+        "Your feedback has been forwarded to the graveyard.",
+        "Sorry, I didn't realize there was a no-PvP zone here.",
+        "I'll put that in my suggestion box. It has no bottom.",
+        "You've made some great points. None about the fight, but still.",
+        "I see we've reached the whisper phase of PvP.",
+        "Do you always send follow-up surveys after a fight?"
     },
     ['Funny'] = {
-        'My keyboard slipped and here we are.',
-        'I was just checking if your respawn timer works.',
-        'The quest said defeat enemies. I follow instructions.',
-        'Sorry, my map said this was a sightseeing tour.',
-        'I blame the goblins. Always the goblins.'
+        "The graveyard spirit and I are starting a loyalty program.",
+        "I came for the quests, stayed for the fan mail.",
+        "You're typing faster than you fought. Impressive.",
+        "Sorry, my GPS keeps routing me to your corpse.",
+        "I thought I was farming mobs. Turns out it was mail.",
+        "The flight master asked me to say hello.",
+        "My repair bill is low, and my inbox is thriving.",
+        "This is the most active my social inbox has been all week.",
+        "I promise to read your complaint after the next respawn.",
+        "Some people collect mounts. I collect angry whispers."
     },
     ['Dry Humor'] = {
-        'Interesting observation.',
-        'That is one way to look at it.',
-        'Understood. Anyway.',
-        'The situation seems to be proceeding normally.',
-        'A compelling argument, certainly.'
+        "Noted. I'll continue.",
+        "Sounds like an unfortunate afternoon.",
+        "I can see this has affected you.",
+        "Thank you for the update.",
+        "An interesting interpretation of events.",
+        "Well, that is certainly a message.",
+        "I appreciate the detailed report.",
+        "That outcome was within expectations.",
+        "I'll consider your position. Briefly.",
+        "Understood. See you in game."
     },
     ['Friendly'] = {
-        'All good, just having some PvP fun.',
-        'No hard feelings. Good luck out there.',
-        'Haha, fair enough. See you around.',
-        'GG, that was a fun fight.',
-        'Nothing personal. Have a good one.'
-    },
-    ['Ridiculous'] = {
-        'My pet rock made the tactical decision.',
-        'The council of murlocs demanded this duel.',
-        'Please forward complaints to the nearest mailbox.',
-        'A very small gnome is steering my character.',
-        'The prophecy mentioned this exact moment.'
+        "All good, just having some PvP fun.",
+        "No hard feelings. Good luck out there.",
+        "Haha, fair enough. See you around.",
+        "GG, that was a fun fight.",
+        "Nothing personal. Have a good one.",
+        "I'll head out for a bit. Good luck questing.",
+        "I get it. Being camped isn't fun. GG.",
+        "It's all game stuff on my end, no hate.",
+        "Fair play. Catch you next time.",
+        "Have a good one, seriously."
     }
 }
 local function label(parent, text, x, y, width)
