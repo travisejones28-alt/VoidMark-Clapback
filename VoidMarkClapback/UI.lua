@@ -1,6 +1,19 @@
 local _, V = ...
 -- Compact, entirely in-game, user-triggered preset replies. No Windows companion.
-local panel, history, targetText, preview, status, styleMenu, replyMenu
+local panel, history, targetText, preview, status, styleMenu, replyMenu, destinationMenu
+local destination = 'Whisper'
+local destinations = {'Whisper', 'General', 'LocalDefense'}
+local function destinationChannel()
+    if destination == 'Whisper' then
+        local c = V.conversations[V.selected]
+        if not c or not c.name or c.name == '' then return nil, 'Select a whisper player first.' end
+        return 'WHISPER', c.name
+    end
+    local name = destination == 'General' and 'General' or 'LocalDefense'
+    local channelID = GetChannelName(name)
+    if not channelID or channelID == 0 then return nil, name .. ' is not joined in this zone.' end
+    return 'CHANNEL', channelID
+end
 local style = 'Sarcastic'
 local replyIndex = 1
 local styleOrder = {'Subscription', 'Ganking', 'Winning PvP', 'Corpse Runs', 'No Life', 'Sarcastic', 'Funny', 'Friendly'}
@@ -125,12 +138,13 @@ local function updatePreview()
     if preview then preview:SetText(selectedReply() or 'Choose a reply.') end
     if styleMenu then UIDropDownMenu_SetText(styleMenu, style) end
     if replyMenu then UIDropDownMenu_SetText(replyMenu, 'Reply '..replyIndex..' of '..#replies[style]) end
+    if destinationMenu then UIDropDownMenu_SetText(destinationMenu, destination) end
 end
 function V.Refresh()
     if not panel then return end
     V.Prune()
     local c=V.conversations[V.selected]
-    targetText:SetText(c and ('To: '..c.name) or 'No player selected')
+    targetText:SetText(c and ('Player: '..c.name) or 'No player selected')
     history:Clear()
     if c then
         for i=math.max(1,#c.messages-5),#c.messages do
@@ -143,7 +157,7 @@ end
 function V.Open()
     if panel then panel:Show();V.Refresh();return end
     panel=CreateFrame('Frame','VoidMarkClapbackFrame',UIParent,'BackdropTemplate')
-    panel:SetSize(425,310)
+    panel:SetSize(455,380)
     panel:SetClampedToScreen(true)
     panel:SetMovable(true)
     panel:EnableMouse(true)
@@ -165,7 +179,7 @@ function V.Open()
     local close=CreateFrame('Button',nil,panel,'UIPanelCloseButton')
     close:SetPoint('TOPRIGHT',0,0)
     targetText=label(panel,'No player selected',13,-38,290)
-    button(panel,'Next Player',300,-33,108,function()
+    button(panel,'Next Player',329,-33,110,function()
         local keys={}
         for k in pairs(V.conversations) do table.insert(keys,k) end
         table.sort(keys)
@@ -177,30 +191,29 @@ function V.Open()
     end)
     history=CreateFrame('ScrollingMessageFrame',nil,panel)
     history:SetPoint('TOPLEFT',13,-68)
-    history:SetSize(396,85)
+    history:SetSize(424,107)
     history:SetFontObject(ChatFontNormal)
     history:SetJustifyH('LEFT')
     history:SetFading(false)
     history:SetMaxLines(35)
     history:EnableMouseWheel(true)
     history:SetScript('OnMouseWheel',function(self,d)if d>0 then self:ScrollUp()else self:ScrollDown()end end)
-    label(panel,'Style:',13,-166,60)
+    label(panel,'Style:',13,-194,65)
     styleMenu=CreateFrame('Frame','VoidMarkClapbackStyleMenu',panel,'UIDropDownMenuTemplate')
-    styleMenu:SetPoint('TOPLEFT',55,-151)
-    UIDropDownMenu_SetWidth(styleMenu,142)
+    styleMenu:SetPoint('TOPLEFT',58,-178)
+    UIDropDownMenu_SetWidth(styleMenu,155)
     UIDropDownMenu_Initialize(styleMenu,function(self,level)
         for _,name in ipairs(styleOrder) do
             local option=UIDropDownMenu_CreateInfo()
-            option.text=name
-            option.checked=(style==name)
+            option.text=name;option.checked=(style==name)
             option.func=function()style=name;replyIndex=1;updatePreview();CloseDropDownMenus()end
             UIDropDownMenu_AddButton(option,level)
         end
     end)
-    label(panel,'Reply:',227,-166,55)
+    label(panel,'Reply:',253,-194,65)
     replyMenu=CreateFrame('Frame','VoidMarkClapbackReplyMenu',panel,'UIDropDownMenuTemplate')
-    replyMenu:SetPoint('TOPLEFT',268,-151)
-    UIDropDownMenu_SetWidth(replyMenu,105)
+    replyMenu:SetPoint('TOPLEFT',297,-178)
+    UIDropDownMenu_SetWidth(replyMenu,112)
     UIDropDownMenu_Initialize(replyMenu,function(self,level)
         for i,message in ipairs(replies[style]) do
             local option=UIDropDownMenu_CreateInfo()
@@ -210,29 +223,54 @@ function V.Open()
             UIDropDownMenu_AddButton(option,level)
         end
     end)
-    preview=label(panel,'',15,-208,393)
+    label(panel,'Post to:',13,-232,80)
+    destinationMenu=CreateFrame('Frame','VoidMarkClapbackDestinationMenu',panel,'UIDropDownMenuTemplate')
+    destinationMenu:SetPoint('TOPLEFT',83,-216)
+    UIDropDownMenu_SetWidth(destinationMenu,163)
+    UIDropDownMenu_Initialize(destinationMenu,function(self,level)
+        for _,name in ipairs(destinations) do
+            local option=UIDropDownMenu_CreateInfo()
+            option.text=name;option.checked=(destination==name)
+            option.func=function()
+                destination=name;updatePreview()
+                status:SetText(name=='Whisper' and 'Will whisper the selected player.' or 'Will post to '..name..' in your current zone.')
+                CloseDropDownMenus()
+            end
+            UIDropDownMenu_AddButton(option,level)
+        end
+    end)
+    preview=label(panel,'',15,-260,423)
     preview:SetTextColor(.95,.9,1)
-    preview:SetHeight(38)
-    button(panel,'Send',13,-253,96,function()
-        local c=V.conversations[V.selected]
+    preview:SetHeight(43)
+    button(panel,'Send',13,-310,102,function()
         local message=selectedReply()
-        if not c or not c.name or c.name=='' then status:SetText('Select a player first.');return end
         if not message or message=='' then status:SetText('Choose a reply first.');return end
-        -- A deliberate click sends one whisper; no automated responses or game inputs.
-        SendChatMessage(message,'WHISPER',nil,c.name)
-        status:SetText('Sent to '..c.name)
+        local channel,target=destinationChannel()
+        if not channel then status:SetText(target);return end
+        if channel=='WHISPER' then
+            SendChatMessage(message,'WHISPER',nil,target)
+            status:SetText('Whisper sent to '..target)
+        else
+            SendChatMessage(message,'CHANNEL',nil,target)
+            status:SetText('Posted to '..destination)
+        end
     end)
-    button(panel,'Edit in chat',119,-253,116,function()
-        local c=V.conversations[V.selected]
-        if not c or not selectedReply() then status:SetText('Select a player first.');return end
-        ChatFrame_OpenChat('/w '..c.name..' '..selectedReply())
-        status:SetText('Edit the whisper and press Enter to send.')
+    button(panel,'Edit in chat',126,-310,143,function()
+        local channel,target=destinationChannel()
+        if not channel then status:SetText(target);return end
+        local message=selectedReply()
+        if channel=='WHISPER' then
+            ChatFrame_OpenChat('/w '..target..' '..message)
+        else
+            ChatFrame_OpenChat('/'..target..' '..message)
+        end
+        status:SetText('Review the message, then press Enter.')
     end)
-    button(panel,'Next Reply',244,-253,164,function()
+    button(panel,'Next Reply',281,-310,158,function()
         replyIndex=replyIndex % #replies[style]+1
         updatePreview()
     end)
-    status=label(panel,'Pick a reply and click Send.',13,-285,397)
+    status=label(panel,'Pick a reply and click Send.',13,-347,426)
     updatePreview()
     V.Refresh()
 end
