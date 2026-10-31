@@ -1,0 +1,7 @@
+node_modules/
+*.log
+*.dpapi
+config.json
+history.json
+dist/
+.test-*/

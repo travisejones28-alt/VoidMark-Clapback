@@ -1,0 +1,8 @@
+## Interface: 11509
+## Title: |cffaa77ffVoidMark Clapback|r
+## Notes: Whisper context and manual reply tools for the Clapback Windows companion.
+## Author: Travis Jones
+## Version: 0.1.0
+## SavedVariablesPerCharacter: VoidMarkClapbackDB
+Core.lua
+UI.lua
