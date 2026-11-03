@@ -11,6 +11,7 @@ function SetItemRef() forwarded=forwarded+1 end
 SlashCmdList={}
 local V={Open=function()end}
 assert(loadfile('VoidMarkClapback/Core.lua'))('VoidMarkClapback',V)
+local mockedOpen = V.Open
 assert(loadfile('VoidMarkClapback/UI.lua'))('VoidMarkClapback', V) -- load presets without opening the UI
 assert(#V.ReplyStyles == 13, 'all reply categories available')
 local seenReplies = {}
@@ -24,6 +25,7 @@ for _,category in ipairs(V.ReplyStyles) do
   end
 end
 assert(V.Replies['1v1 Excuses'] and V.Replies['Backup Threats'] and V.Replies['Camping Stories'] and V.Replies['Rage Whispers'] and V.Replies['Whisper Warriors'], 'common rage patterns covered')
+V.Open = mockedOpen -- keep subsequent hyperlink tests independent of WoW UI frames
 assert(loadfile('VoidMarkClapback/Minimap.lua')) -- syntax check only
 handlers.event(nil,'ADDON_LOADED','VoidMarkClapback')
 local function incoming(player,id)
