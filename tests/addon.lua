@@ -11,7 +11,19 @@ function SetItemRef() forwarded=forwarded+1 end
 SlashCmdList={}
 local V={Open=function()end}
 assert(loadfile('VoidMarkClapback/Core.lua'))('VoidMarkClapback',V)
-assert(loadfile('VoidMarkClapback/UI.lua')) -- syntax check only
+assert(loadfile('VoidMarkClapback/UI.lua'))('VoidMarkClapback', V) -- load presets without opening the UI
+assert(#V.ReplyStyles == 13, 'all reply categories available')
+local seenReplies = {}
+for _,category in ipairs(V.ReplyStyles) do
+  local items=V.Replies[category]
+  assert(items and #items>=10, 'category with at least ten replies: '..category)
+  for _,reply in ipairs(items) do
+    assert(type(reply)=='string' and #reply>0 and #reply<=200, 'safe chat-length preset: '..category)
+    assert(not seenReplies[reply:lower()], 'duplicate preset: '..reply)
+    seenReplies[reply:lower()]=true
+  end
+end
+assert(V.Replies['1v1 Excuses'] and V.Replies['Backup Threats'] and V.Replies['Camping Stories'] and V.Replies['Rage Whispers'] and V.Replies['Whisper Warriors'], 'common rage patterns covered')
 assert(loadfile('VoidMarkClapback/Minimap.lua')) -- syntax check only
 handlers.event(nil,'ADDON_LOADED','VoidMarkClapback')
 local function incoming(player,id)
